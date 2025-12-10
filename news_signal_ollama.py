@@ -7,17 +7,17 @@ MODEL_NAME = "llama3"  # or "llama3:8b" if you pulled that
 def get_trading_signal_from_headline(headline: str):
     """
     Send the headline to the local LLM (Ollama) and get back a structured trading signal.
-    The instrument is EUR/USD by default, but you can change it in the prompt.
+    The instrument is GBP/USD by default, but you can change it in the prompt.
     """
     prompt = f"""
 You are a systematic trading assistant.
 
-Instrument: EUR/USD
+Instrument: GBP/USD
 Time horizon: next 1-24 hours.
 
 Task:
 1. Read the following news headline.
-2. Evaluate its *short-term* likely impact on EUR/USD.
+2. Evaluate its *short-term* likely impact on GBP/USD.
 3. Respond ONLY in strict JSON with this exact structure:
 
 {{
@@ -31,7 +31,7 @@ Rules:
 - "bullish" means positive for EUR against USD (EUR/USD up).
 - "bearish" means negative for EUR against USD (EUR/USD down).
 - "neutral" means unclear or no strong edge.
-- "long" = buy EUR/USD, "short" = sell EUR/USD, "flat" = no position.
+- "long" = buy GBP/USD, "short" = sell GBP/USD, "flat" = no position.
 - If the headline is ambiguous, prefer "neutral" and "flat".
 - Do NOT include any text before or after the JSON.
 
@@ -87,9 +87,9 @@ def interpret_signal(signal: dict):
         print("- Stay FLAT (no trade). Confidence too low or neutral signal.")
     else:
         if direction == "long":
-            print("- Consider LONG EUR/USD with small risk.")
+            print("- Consider LONG GBP/USD with small risk.")
         elif direction == "short":
-            print("- Consider SHORT EUR/USD with small risk.")
+            print("- Consider SHORT GBP/USD with small risk.")
         else:
             print("- Stay FLAT (direction unclear).")
 
@@ -98,7 +98,7 @@ def interpret_signal(signal: dict):
 
 def main():
     print("News → Trading Signal (Ollama + llama3)")
-    print("Instrument: EUR/USD (you can change this in the code).")
+    print("Instrument: GBP/USD (you can change this in the code).")
     print("Type 'quit' to exit.\n")
 
     while True:
