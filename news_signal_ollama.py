@@ -1,5 +1,7 @@
 import json
 import ollama
+import csv
+from datetime import datetime
 
 MODEL_NAME = "llama3"  # or "llama3:8b" if you pulled that
 
@@ -115,6 +117,7 @@ def main():
         signal = get_trading_signal_from_headline(headline)
 
         if signal is not None:
+            log_signal(headline, signal)
             interpret_signal(signal)
         else:
             print("No valid signal returned. Try another headline.\n")
@@ -122,3 +125,32 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+def log_signal(headline: str, signal: dict, filename: str = "signals_log.csv"):
+    """
+    Append the headline and signal data to a CSV file.
+    """
+    row = {
+        "timestamp": datetime.utcnow().isoformat(),
+        "headline": headline,
+        "sentiment": signal.get("sentiment"),
+        "direction": signal.get("direction"),
+        "confidence": signal.get("confidence"),
+        "reason": signal.get("reason"),
+    }
+
+    file_exists = False
+    try:
+        with open(filename, "r", newline="", encoding="utf-8") as f:
+            file_exists = True
+    except FileNotFoundError:
+        file_exists = False
+
+    with open(filename, "a", newline="", encoding="utf-8") as f:
+        writer = csv.DictWriter(
+            f,
+            fieldnames=["timestamp", "headline", "sentiment", "direction", "confidence", "reason"]
+        )
+        if not file_exists:
+            writer.writeheader()
+        writer.writerow(row)
